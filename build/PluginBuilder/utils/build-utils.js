@@ -110,6 +110,11 @@ checkPluginInfo = function (isSupportUI, tags) {
         return result;
     }
 
+    if (FishMovieSdk.videoPluginInfo.searchPageUrl.indexOf("@st") === -1) {
+        result.msg = '搜索页地址未包含搜索关键字定位符 @st';
+        return result;
+    }
+
     if (FishMovieSdk.videoPluginInfo.supports.length <= 0) {
         result.msg = '请填写是否支持UI';
         return result;

@@ -24,20 +24,25 @@
 <div id="app">
 
     <el-container style="margin-top: -10px; scrollbar-base-color: blue">
+
         <el-header
                 style="margin-top: 0; background-color:#409eff;position: fixed;width: 100%;left: 0;top: 0;z-index: 1500;text-align: right;font-size: 12px">
-            <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect"
+            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect"
                      background-color="#009eff" text-color="#fff" active-text-color="#fff">
-                <el-menu-item index="1">创建新插件</el-menu-item>
+                <el-menu-item index="1">创建或升级插件</el-menu-item>
                 <el-menu-item index="2">导出插件</el-menu-item>
                 <el-button @click="openSettingPage" style="margin-top: 10px;margin-right: 32px" type="primary" circle
                            icon="el-icon-setting"></el-button>
             </el-menu>
         </el-header>
+
         <el-main>
             <el-form v-if="showFirst" style="width: 80%; margin-top: 80px" label-position="right" ref="form"
                      :model="form"
                      label-width="80px" size="medium">
+                <el-form-item>
+                    <el-button @click="onGoEditPlugin">打开已有插件清单文件</el-button>
+                </el-form-item>
                 <el-form-item label="名称">
                     <el-input clearable placeholder="请输入插件的名字" v-model="form.videoPluginInfo.name"></el-input>
                 </el-form-item>
@@ -193,7 +198,6 @@
 
                 <el-form-item>
                     <el-button type="primary" @click="onExportPlugin">立即导出</el-button>
-                    <!--                            <el-button @click="onCancelBuildPlugin">取消</el-button>-->
                 </el-form-item>
             </el-form>
 
@@ -379,8 +383,8 @@
             },
 
             handleSelect(key, keyPath) {
-                this.showFirst = (key == 1);
-                this.showTwo = (key == 2);
+                this.showFirst = (key === "1");
+                this.showTwo = (key === "2");
             },
 
             showPickMainScript() {
@@ -434,6 +438,40 @@
             openSettingPage() {
                 this.dialogSettings.show = true;
             },
+
+            onGoEditPlugin() {
+                openSelectFileDialog((value) => {
+                    const {ipcRenderer} = require('electron');
+                    const result = ipcRenderer.sendSync('readFile', {path: value});
+                    if (result.resultCode === 0) {
+                        this.$notify.error({
+                            title: "失败",
+                            message: "打开失败",
+                        });
+                        return
+                    }
+                    let videoPluginParser;
+                    try {
+                        videoPluginParser = JSON.parse(result.resultValue)
+                    } catch (e) {
+                        this.$notify.error({
+                            title: "失败",
+                            message: "文件格式不正确",
+                        });
+                        return;
+                    }
+
+                    this.form.videoPluginInfo = FishMovieSdk.videoPluginInfo = videoPluginParser;
+                    this.form.tags = FishMovieSdk.videoPluginInfo.tags.toString().replace(',', ' ');
+                    if (FishMovieSdk.videoPluginInfo.supports[0]) {
+                        this.form.isSupportUI = '是'
+                    } else {
+                        this.form.isSupportUI = '否'
+                    }
+
+                })
+            }
+            ,
             onExportPlugin() {
                 this.$confirm("将导出插件, 是否继续?", "提示", {
                     confirmButtonText: "继续",
@@ -589,9 +627,7 @@
         },
         data: function () {
             return {
-                visible: false,
                 activeIndex: "1",
-                activeIndex2: "1",
                 showFirst: true,
                 showTwo: false,
                 showExportProgressDialog: false,
