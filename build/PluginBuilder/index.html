@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>小丑鱼插件工具</title>
+    <!-- import Vue before Element -->
+    <script src="./lib/vue.js"></script>
+    <!-- import JavaScript -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="./renderer.js"></script>
+    <style>
+        .input_build_root_path {
+
+        }
+
+        .input_plugins_root_path {
+
+        }
+    </style>
+    <!-- 引入样式 -->
+</head>
+<body style="">
+<div id="app">
+
+    <el-container style="margin-top: -10px; scrollbar-base-color: blue">
+        <el-header
+                style="margin-top: 0; background-color:#409eff;position: fixed;width: 100%;left: 0;top: 0;z-index: 1500;text-align: right;font-size: 12px">
+            <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect"
+                     background-color="#009eff" text-color="#fff" active-text-color="#fff">
+                <el-menu-item index="1">创建新插件</el-menu-item>
+                <el-menu-item index="2">导出插件</el-menu-item>
+                <el-button @click="openSettingPage" style="margin-top: 10px;margin-right: 32px" type="primary" circle
+                           icon="el-icon-setting"></el-button>
+            </el-menu>
+        </el-header>
+        <el-main>
+            <el-form v-if="showFirst" style="width: 80%; margin-top: 80px" label-position="right" ref="form"
+                     :model="form"
+                     label-width="80px" size="medium">
+                <el-form-item label="名称">
+                    <el-input clearable placeholder="请输入插件的名字" v-model="form.videoPluginInfo.name"></el-input>
+                </el-form-item>
+
+                <el-form-item label="[选填]作者">
+                    <el-input clearable placeholder="请输入作者，默认为小丑鱼" v-model="form.videoPluginInfo.author"></el-input>
+                </el-form-item>
+
+                <el-form-item label="[选填]图标地址">
+                    <el-input clearable placeholder="请输入插件图标地址" v-model="form.videoPluginInfo.img"></el-input>
+                </el-form-item>
+
+                <el-form-item label="版本名">
+                    <el-input clearable placeholder="要显示的插件版本名字" v-model="form.videoPluginInfo.verName"></el-input>
+                </el-form-item>
+
+                <el-form-item label="版本号">
+                    <el-input-number :min="0" v-model="form.videoPluginInfo.verCode"></el-input-number>
+                </el-form-item>
+
+                <el-form-item label="[选填]简介">
+                    <el-input clearable placeholder="请输入插件简介" v-model="form.videoPluginInfo.introShort"></el-input>
+                </el-form-item>
+
+                <el-form-item label="[选填]介绍">
+                    <el-input clearable type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" type="textarea"
+                              placeholder="请输入插件介绍"
+                              v-model="form.videoPluginInfo.intro"></el-input>
+                </el-form-item>
+                <el-form-item label="[选填]标签">
+                    <el-input :autosize="{ minRows: 1, maxRows:2 }" clearable placeholder="请输入插件标签，多个标签以空格隔开"
+                              type="textarea"
+                              v-model="form.tags"></el-input>
+                </el-form-item>
+
+                <el-form-item label="是否支持UI">
+                    <el-select v-model="form.isSupportUI" placeholder="请选择引擎版本号">
+                        <el-option label="是" value="true"></el-option>
+                        <el-option label="否" value="false"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="[选填]根地址">
+                    <el-input clearable placeholder="请输入根地址，默认使用主页地址" v-model="form.videoPluginInfo.hostUrl"></el-input>
+                </el-form-item>
+
+                <el-form-item label="主页地址">
+                    <el-input clearable placeholder="请输入主页地址" v-model="form.videoPluginInfo.mainPageUrl"></el-input>
+                </el-form-item>
+
+                <el-form-item label="电影页地址">
+                    <el-input clearable placeholder="请输入电影页地址" v-model="form.videoPluginInfo.moviePageUrl"></el-input>
+                </el-form-item>
+
+                <el-form-item label="电视剧页地址">
+                    <el-input clearable placeholder="请输入电视剧页地址" v-model="form.videoPluginInfo.soapPageUrl"></el-input>
+                </el-form-item>
+
+                <el-form-item label="综艺页地址">
+                    <el-input clearable placeholder="请输入综艺页地址"
+                              v-model="form.videoPluginInfo.varietyPageUrl"></el-input>
+                </el-form-item>
+
+                <el-form-item label="动漫页地址">
+                    <el-input clearable placeholder="请输入动漫页地址" v-model="form.videoPluginInfo.animPageUrl"></el-input>
+                </el-form-item>
+
+                <el-form-item label="搜索页地址">
+                    <el-input clearable placeholder="请输入搜索页地址"
+                              v-model="form.videoPluginInfo.searchPageUrl"></el-input>
+                </el-form-item>
+
+                <el-form-item label="主页脚本">
+
+                    <el-row>
+                        <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
+                                  placeholder="请输入脚本文件路径或脚本字符串"
+                                  v-model="form.videoPluginInfo.mainPageScript"></el-input>
+                        <el-button @click="showPickMainScript">选择脚本文件</el-button>
+                    </el-row>
+                </el-form-item>
+
+                <el-form-item label="分类页脚本">
+                    <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
+                              placeholder="请输入脚本文件路径或脚本字符串"
+                              v-model="form.videoPluginInfo.videosPageScript"></el-input>
+                    <el-button @click="showPickVideosScript">选择脚本文件</el-button>
+                </el-form-item>
+
+                <el-form-item label="搜索页脚本">
+                    <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
+                              placeholder="请输入脚本文件路径或脚本字符串"
+                              v-model="form.videoPluginInfo.searchPageScript"></el-input>
+                    <el-button @click="showPickSearchScript">选择脚本文件</el-button>
+                </el-form-item>
+
+                <el-form-item label="播放页脚本">
+                    <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
+                              placeholder="请输入脚本文件路径或脚本字符串"
+                              v-model="form.videoPluginInfo.infoPageScript"></el-input>
+                    <el-button @click="showPickPlayScript">选择脚本文件</el-button>
+                </el-form-item>
+
+                <el-form-item label="播放链解析脚本">
+                    <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
+                              placeholder="请输入脚本文件路径或脚本字符串"
+                              v-model="form.videoPluginInfo.playUrlParserScript"
+                    ></el-input>
+                    <el-button @click="showPickPlayUrlParserScript">选择脚本文件</el-button>
+                </el-form-item>
+
+                <el-form-item label="引擎版本号">
+                    <el-select v-model="form.videoPluginInfo.engineVerCode" placeholder="请选择引擎版本号">
+                        <el-option label="1" value="1"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="更新日期">
+                    <el-col :span="11">
+                        <el-date-picker
+                                type="date"
+                                format="yyyy/MM/dd"
+                                value-format="yyyy/MM/dd"
+                                placeholder="选择日期"
+                                v-model="form.videoPluginInfo.updateTime"
+                        ></el-date-picker>
+                    </el-col>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onCreateNewPlugin">立即创建</el-button>
+                    <!--                            <el-button @click="onCancelCreateNewPlugin">取消</el-button>-->
+                </el-form-item>
+            </el-form>
+
+            <el-form v-if="showTwo" style="margin-top: 80px" label-position="right" ref="form" :model="exportPluginInfo"
+                     label-width="80px"
+                     size="medium">
+                <el-form-item style="width: 600px" label="清单文件路径">
+                    <el-row>
+                        <el-input clearable style="width:85%" placeholder="请输入插件清单文件路径"
+                                  v-model="exportPluginInfo.manifestPath"></el-input>
+
+                        <el-button @click="showPickDirWinExportManifestPath">选 择</el-button>
+                    </el-row>
+                </el-form-item>
+                <el-form-item label="导出格式">
+                    <el-select v-model="exportPluginInfo.subfix" placeholder="请选择，默认Json">
+                        <el-option label="JSON" value="json"></el-option>
+                        <el-option label="FPM" value="fpm"></el-option>
+                        <el-option label="FPP" value="fpp"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="onExportPlugin">立即导出</el-button>
+                    <!--                            <el-button @click="onCancelBuildPlugin">取消</el-button>-->
+                </el-form-item>
+            </el-form>
+
+            <el-dialog width="600px" modal="true" show-close="false" close-on-click-modal="false" title="设置"
+                       :visible.sync="dialogSettings.show">
+                <el-form :model="dialogSettings">
+                    <el-form-item label="构建工具根目录" :label-width="formLabelWidth">
+                        <el-row ref="input_build_root_path">
+                            <el-input clearable style="width:60%" placeholder="构建工具的根目录路径"
+                                      v-model="dialogSettings.setting.buildRootPath"
+                                      autocomplete="off"></el-input>
+                            <el-button @click="showPickDirWin">选 择</el-button>
+                        </el-row>
+
+                    </el-form-item>
+
+                    <el-form-item label="插件输出根目录" :label-width="formLabelWidth">
+                        <el-row>
+                            <el-input clearable class="input_plugins_root_path" style="width:60%"
+                                      placeholder="插件输出根目录路径"
+                                      v-model="dialogSettings.setting.pluginsRootPath"
+                                      autocomplete="off"></el-input>
+                            <el-button @click="showPluginsRootPathPickDirWin">选 择</el-button>
+                        </el-row>
+                    </el-form-item>
+                    <el-form-item label="" :label-width="formLabelWidth">
+                        <span style="font-size: medium; font-family: arial; color: gray; ">{{app.version}}</span>
+                    </el-form-item>
+                    <el-form-item label="" :label-width="formLabelWidth">
+                        <el-button type="text" @click="openRepo">开源仓库</el-button>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="onDialogSettingsCancel">取 消</el-button>
+                    <el-button type="primary" @click="onDialogSettingsConfirm">确 定</el-button>
+                </div>
+            </el-dialog>
+        </el-main>
+
+    </el-container>
+</div>
+</body>
+
+<script src="./utils/build-utils.js"></script>
+<script src="./utils/exportPlugin-utils.js"></script>
+
+<script>
+
+    const electron = require('electron').remote;
+    const path = require('path');
+    const {ipcRenderer} = require('electron');
+
+    const {dialog} = electron;
+    const {settingsStrongPath, setting, initSettings, loadSettings, saveSettings} = require(path.join(__dirname, 'manager', 'settings'));
+    const {FishMovieSdk} = require(path.join(__dirname, 'sdk', 'fish-movie-sdk'));
+
+    let appVersion = '';
+    const readPackageInfo = ipcRenderer.sendSync('readFile', {path: path.join(__dirname, 'package.json')});
+    try {
+        if (readPackageInfo.resultCode === 1) {
+            appVersion = '软件版本： ' + JSON.parse(readPackageInfo.resultValue).version;
+        }
+    } finally {
+    }
+
+    function checkSettings(vue) {
+        if (setting.buildRootPath === '' || setting.buildRootPath === undefined) {
+            vue.openRequireSettingsDialog('你还没有配置构建工具根目录, 请立即设置！');
+            vue.$notify.error({
+                title: '错误',
+                message: '路径为空，保存失败'
+            });
+            vue.dialogSettings.show = false;
+            return false;
+        }
+
+        if (setting.pluginsRootPath === '' || setting.pluginsRootPath === undefined) {
+            vue.openRequireSettingsDialog('你还没有配置插件输出根目录, 请立即设置！');
+            vue.$notify.error({
+                title: '错误',
+                message: '路径为空，保存失败'
+            });
+            vue.dialogSettings.show = false;
+            return false;
+        }
+
+        return true;
+    }
+
+    function openSelectDirDialog(onResult) {
+        dialog.showOpenDialog({
+            properties: ['openDirectory']
+        }).then((value => {
+            if (value.filePaths[0] != undefined) {
+                const key = value.filePaths[0];
+                onResult(key)
+            }
+        }))
+    }
+
+    function openSelectFileDialog(onResult) {
+        dialog.showOpenDialog({
+            properties: ['openFile']
+        }).then((value => {
+            if (value.filePaths[0] != undefined) {
+                const key = value.filePaths[0];
+                onResult(key)
+            }
+        }))
+    }
+
+    const vue = new Vue({
+        el: '#app',
+        mounted: function () {
+            loadSettings((response) => {
+                    let initSettingsDefaultBuildRootPath = path.dirname(path.dirname(path.dirname(__dirname)));
+                    if (response.resultCode === 1) {
+                        if (response.resultValue.buildRootPath === "" || response.resultValue.buildRootPath === undefined) {
+                            try {
+                                const readSettings = ipcRenderer.sendSync('readFile', {path: path.join(initSettingsDefaultBuildRootPath, 'buildToolsInfo.json')});
+                                if (readSettings.resultCode !== 1) {
+                                    this.openRequireSettingsDialog('你还没有配置构建工具根目录, 请立即设置！');
+                                    return;
+                                }
+                                JSON.stringify(readSettings.resultValue);
+                                setting.buildRootPath = initSettingsDefaultBuildRootPath;
+                            } catch (e) {
+                                this.openRequireSettingsDialog('你还没有配置构建工具根目录, 请立即设置!');
+                                return;
+                            }
+                        }
+                        if (response.resultValue.pluginsRootPath === "" || response.resultValue.pluginsRootPath === undefined) {
+                            if (setting.buildRootPath !== "" && setting.buildRootPath !== undefined) {
+                                setting.pluginsRootPath = path.dirname(setting.buildRootPath);
+                            } else {
+                                this.openRequireSettingsDialog('你还没有配置插件输出根目录, 请立即设置！');
+                                return;
+                            }
+                        }
+                        if (setting.buildRootPath === "") {
+                            setting.buildRootPath = response.resultValue.buildRootPath;
+                        }
+                        if (setting.pluginsRootPath === "") {
+                            setting.pluginsRootPath = response.resultValue.pluginsRootPath;
+                        }
+                        setting.exportPluginInfo.manifestPath = response.resultValue.exportPluginInfo.manifestPath;
+                        setting.exportPluginInfo.subfix = response.resultValue.exportPluginInfo.subfix;
+                    } else {
+                        try {
+                            const readSettings = ipcRenderer.sendSync('readFile', {path: path.join(initSettingsDefaultBuildRootPath, 'buildToolsInfo.json')});
+                            if (readSettings.resultCode !== 1) {
+                                this.openRequireSettingsDialog('你还没有配置构建工具根目录, 请立即设置！');
+                                return;
+                            }
+                            JSON.stringify(readSettings.resultValue);
+                            setting.buildRootPath = path.join(initSettingsDefaultBuildRootPath);
+                            setting.pluginsRootPath = path.dirname(setting.buildRootPath);
+                            saveSettings(JSON.stringify(setting), (event, args) => {
+                            })
+                        } catch (e) {
+                            initSettings();
+                            this.openRequireSettingsDialog('你还没有配置构建工具根目录, 请立即设置！')
+                        }
+                    }
+                }
+            );
+        },
+        methods: {
+            openRepo() {
+                require('electron').shell.openExternal('https://github.com/NESPTechnology/FishMoviePluginDevelopTools')
+            }
+            ,
+            openRequireSettingsDialog(msg) {
+                this.$confirm(msg, '警告', {
+                    confirmButtonText: '好',
+                    cancelButtonText: '退出',
+                    type: 'warning'
+                }).then(() => {
+                    this.openSettingPage();
+                }).catch(() => {
+                    electron.getCurrentWindow().close();
+                });
+            },
+
+            handleSelect(key, keyPath) {
+                this.showFirst = (key == 1);
+                this.showTwo = (key == 2);
+            },
+
+            showPickMainScript() {
+                openSelectFileDialog((value) => {
+                    FishMovieSdk.videoPluginInfo.mainPageScript = value;
+                })
+            },
+
+            showPickVideosScript() {
+                openSelectFileDialog((value) => {
+                    FishMovieSdk.videoPluginInfo.videosPageScript = value;
+                })
+            },
+
+            showPickSearchScript() {
+                openSelectFileDialog((value) => {
+                    FishMovieSdk.videoPluginInfo.searchPageScript = value;
+                })
+            },
+
+            showPickPlayScript() {
+                openSelectFileDialog((value) => {
+                    FishMovieSdk.videoPluginInfo.infoPageScript = value;
+                })
+            },
+
+            showPickPlayUrlParserScript() {
+                openSelectFileDialog((value) => {
+                    FishMovieSdk.videoPluginInfo.playUrlParserScript = value;
+                })
+            },
+
+            showPickDirWin() {
+                openSelectDirDialog((value) => {
+                    setting.buildRootPath = value;
+                });
+            },
+
+            showPluginsRootPathPickDirWin() {
+                openSelectDirDialog((value) => {
+                    setting.pluginsRootPath = value;
+                });
+            },
+
+            showPickDirWinExportManifestPath() {
+                openSelectFileDialog((value) => {
+                    setting.exportPluginInfo.manifestPath = value;
+                });
+            },
+
+            openSettingPage() {
+                this.dialogSettings.show = true;
+            },
+            onExportPlugin() {
+                this.$confirm("将导出插件, 是否继续?", "提示", {
+                    confirmButtonText: "继续",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                }).then(() => {
+                    const loadingExportPlugin = this.$loading({
+                        lock: true,
+                        text: "正在导出....",
+                        spinner: "el-icon-loading",
+                        background: "rgba(0, 0, 0, 0.7)"
+                    });
+
+                    loadingExportPlugin.text = '正在检查配置....';
+                    let checkExportInfoResult = checkExportInfo();
+
+                    if (!checkExportInfoResult.enable) {
+                        loadingExportPlugin.close();
+
+                        this.$notify.error(
+                            {
+                                title: '导出失败',
+                                message: checkExportInfoResult.msg
+                            }
+                        );
+                        return;
+                    }
+
+                    loadingExportPlugin.text = '正在导出....';
+
+                    try {
+                        exportPlugin((msg) => {
+
+                        }, (success, msg) => {
+                            const path = require('path');
+                            if (success) {
+                                this.$notify.success(
+                                    {
+                                        title: '导出完成',
+                                        message: `已导出到${path.join(path.dirname(path.dirname(setting.exportPluginInfo.manifestPath)), 'out')}`
+                                    }
+                                );
+                            } else {
+                                this.$notify.error(
+                                    {
+                                        title: '导出失败',
+                                        message: `发生错误:${msg}`
+                                    }
+                                );
+                            }
+
+                            loadingExportPlugin.close();
+                        });
+                    } catch (e) {
+
+                    }
+
+                }).catch(() => {
+                });
+            },
+            onCancelBuildPlugin() {
+            }
+            ,
+            onCancelCreateNewPlugin() {
+            }
+            ,
+            onDialogSettingsConfirm() {
+                if (!checkSettings(this)) {
+                    return
+                }
+                saveSettings(JSON.stringify(setting), (event, args) => {
+                    if (args.resultCode == 1) {
+                        this.$notify.success({
+                            title: '成功',
+                            message: '设置成功',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$notify.error({
+                            title: '错误',
+                            message: '设置失败'
+                        });
+                    }
+                });
+
+                this.dialogSettings.show = false;
+            }
+            ,
+            onDialogSettingsCancel() {
+                if (!checkSettings(this)) {
+                    return
+                }
+                this.dialogSettings.show = false;
+            }
+            ,
+            onCreateNewPlugin() {
+                this.$confirm("将创建新的插件工程, 是否继续?", "提示", {
+                    confirmButtonText: "继续",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                }).then(() => {
+
+                    if (!checkBuildRootPath()) {
+                        this.$notify.error(
+                            {
+                                title: '构建失败',
+                                message: '构建工具不可用'
+                            }
+                        );
+                        console.log("result");
+
+                        return;
+                    }
+
+                    const result = checkPluginInfo(this.form.isSupportUI, this.form.tags);
+
+                    console.log(result)
+
+                    if (!result.enable) {
+                        this.$notify.error(
+                            {
+                                title: '构建失败',
+                                message: result.msg
+                            }
+                        );
+                        // loading.close();
+                        return;
+                    }
+
+                    createNewPluginProject((msg) => {
+                        console.log(msg)
+                    }, () => {
+                        setTimeout(() => {
+                            this.$notify.success(
+                                {
+                                    title: '构建完成',
+                                    message: `插件${FishMovieSdk.videoPluginInfo.name}已创建完成!`
+                                }
+                            );
+                            // loading.close();
+                        }, 0);
+                    }, (err) => {
+                        this.$notify.warning(
+                            {
+                                title: '构建出错',
+                                message: `${err}!`
+                            }
+                        );
+                    });
+                }).catch(() => {
+                });
+            }
+        },
+        data: function () {
+            return {
+                visible: false,
+                activeIndex: "1",
+                activeIndex2: "1",
+                showFirst: true,
+                showTwo: false,
+                showExportProgressDialog: false,
+
+                app: {
+                    version: appVersion
+                },
+
+                form: {
+                    videoPluginInfo: FishMovieSdk.videoPluginInfo,
+                    isSupportUI: '否',
+                    tags: "",
+                },
+
+                exportPluginInfo: setting.exportPluginInfo,
+
+                dialogSettings: {
+                    show: false,
+                    setting: setting
+                }
+
+            }
+        }
+    });
+
+</script>
+</html>

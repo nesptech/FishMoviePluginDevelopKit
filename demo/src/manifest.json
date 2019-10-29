@@ -1,0 +1,30 @@
+{
+  "hostUrl": "http://m.benbenji.com/",
+  "intro": "最近在一定时间段无法访问。之前很快！",
+  "verName": "v1.3",
+  "author": "小丑鱼",
+  "img": "http://m.benbenji.com/static/images/headerLogo.png",
+  "introShort": "不太稳定",
+  "updateTime": "2019/09/23",
+  "supports": [
+    true
+  ],
+  "name": "笨笨鸡",
+  "tags": [
+    "快速"
+  ],
+  "vipCode": 0,
+  "verCode": 3,
+  "engineVerCode": 1,
+  "mainPageUrl": "http://m.benbenji.com/",
+  "moviePageUrl": "http://m.benbenji.com/dy/index_1_______1.html",
+  "soapPageUrl": "http://m.benbenji.com/dsj/index_1_______1.html",
+  "varietyPageUrl": "http://m.benbenji.com/arts/",
+  "animPageUrl": "http://m.benbenji.com/dm/",
+  "searchPageUrl": "http://m.benbenji.com/vod-search-wd-@st-p-1.html",
+  "mainPageScript": "./scripts/mainPage.js",
+  "searchPageScript": "./scripts/searchPage.js",
+  "videosPageScript": "./scripts/videosPage.js",
+  "infoPageScript": "./scripts/playPage.js",
+  "playUrlParserScript": "./scripts/playUrlParser.js"
+}

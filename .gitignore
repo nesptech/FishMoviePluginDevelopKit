@@ -1,0 +1,3 @@
+./demo/out
+node_modules
+./build/PluginBuilder/dist

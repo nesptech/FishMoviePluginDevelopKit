@@ -1,0 +1,18 @@
+{
+  "name": "com.nesp.movie.plugin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "tsc && node ./bin/pluginCompile.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "FishMovie",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.7"
+  }
+}

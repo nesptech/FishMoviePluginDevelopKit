@@ -1,0 +1,66 @@
+{
+  "name": "fish-movie-plugin-builder",
+  "version": "1.0.0",
+  "description": "快速创建小丑鱼插件",
+  "main": "main.js",
+  "files": [
+    "dist/electron/**/*",
+    "resources/icons/*",
+    "resources/icons/welcome_logo.png",
+    "resources/*/*"
+   ],
+  "build": {
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "appId": "com.nesp.movie.plugin.builder",
+    "productName": "FishMoviePluginBuilder",
+    "copyright": "Copyright © 2019 Jin",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dmg",
+      "identity": "",
+      "icon": "resources/icons/512x512.png"
+    },
+    "linux": {
+      "maintainer": "Jin",
+      "category": "Development",
+      "vendor": "NESP Technology",
+      "executableName": "FishMoviePluginBuilder",
+      "target": "deb",
+      "icon": "resources/icons",
+      "desktop": "resources/file/fish-movie-plugin-builder.desktop"
+    },
+    "win": {
+      "publisherName": "NESP Technology",
+      "target": "nsis",
+      "icon": "resources/icons/512x512.png"
+    }
+  },
+  "scripts": {
+    "pack": "electron-builder --dir",
+    "pack_win": "electron-builder -w --x64 --dir",
+    "dist": "electron-builder",
+    "start": "electron ."
+  },
+  "repository": "git@github.com:NESPTechnology/FishMoviePluginDevelopTools.git",
+  "keywords": [
+    "FishMovie",
+    "Plugin",
+    "Nesp",
+    "小丑鱼",
+    "插件"
+  ],
+  "author": "NespTechnology@Jin",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^7.0.0"
+  },
+  "dependencies": {
+    "element-ui": "^2.12.0",
+    "settings": "^0.1.1",
+    "shell": "^0.5.0",
+    "vue": "^2.6.10"
+  }
+}

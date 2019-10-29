@@ -1,0 +1,15 @@
+#PATH /usr/share/applications/netease-cloud-music.desktop OR ~/.local/share/applications/netease-cloud-music.desktop 
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=FishMoviePluginBuilder
+Name[zh_CN]=FishMoviePluginBuilder
+Name[zh_TW]=FishMoviePluginBuilder
+Comment=FishMoviePluginBuilder
+Comment[zh_CN]=FishMoviePluginBuilder
+Comment[zh_TW]=FishMoviePluginBuilder
+Icon=fish-movie-plugin-builder
+Exec=FishMoviePluginBuilder
+Categories=Development;
+Terminal=false
+StartupNotify=true
