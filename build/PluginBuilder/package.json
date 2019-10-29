@@ -41,6 +41,7 @@
   "scripts": {
     "pack": "electron-builder --dir",
     "pack_win": "electron-builder -w --x64 --dir",
+    "dist_win": "electron-builder -w --x64",
     "dist": "electron-builder",
     "start": "electron ."
   },

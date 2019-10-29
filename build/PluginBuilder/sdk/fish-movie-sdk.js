@@ -24,6 +24,26 @@ exports.FishMovieSdk = {
         videosPageScript: "./scripts/videosPage.js",
         infoPageScript: "./scripts/playPage.js",
         playUrlParserScript: "./scripts/playUrlParser.js"
+    },
+    getVideoPluginInfoNoUI: function () {
+        return {
+            hostUrl: FishMovieSdk.videoPluginInfo.hostUrl,
+            intro: FishMovieSdk.videoPluginInfo.intro,
+            searchPageUrl: FishMovieSdk.videoPluginInfo.searchPageUrl,
+            searchPageScript: FishMovieSdk.videoPluginInfo.searchPageScript,
+            infoPageScript: FishMovieSdk.videoPluginInfo.infoPageScript,
+            playUrlParserScript: FishMovieSdk.videoPluginInfo.playUrlParserScript,
+            verName: FishMovieSdk.videoPluginInfo.verName,
+            author: FishMovieSdk.videoPluginInfo.author,
+            img: FishMovieSdk.videoPluginInfo.img,
+            introShort: FishMovieSdk.videoPluginInfo.introShort,
+            updateTime: FishMovieSdk.videoPluginInfo.updateTime,
+            supports: FishMovieSdk.videoPluginInfo.supports,
+            name: FishMovieSdk.videoPluginInfo.name,
+            tags: FishMovieSdk.videoPluginInfo.tags,
+            vipCode: FishMovieSdk.videoPluginInfo.vipCode,
+            verCode: FishMovieSdk.videoPluginInfo.verCode,
+            engineVerCode: FishMovieSdk.videoPluginInfo.engineVerCode
+        }
     }
-
 };

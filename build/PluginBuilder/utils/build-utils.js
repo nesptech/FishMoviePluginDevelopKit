@@ -78,34 +78,26 @@ checkPluginInfo = function (isSupportUI, tags) {
 
     if (tags.trim !== '' && tags.trim !== undefined) {
         FishMovieSdk.videoPluginInfo.tags = tags.split(' ');
+    } else {
+        // FishMovieSdk.videoPluginInfo.tags = [''];
+    }
+
+
+    if (urlDisUse(FishMovieSdk.videoPluginInfo.hostUrl)) {
+        result.msg = '根地址为空或格式不正确';
+        return result;
     }
 
     if (urlDisUse(FishMovieSdk.videoPluginInfo.mainPageUrl)) {
-        result.msg = '主页地址为空或格式不正确';
+        FishMovieSdk.videoPluginInfo.mainPageScript = FishMovieSdk.videoPluginInfo.hostUrl;
+    }
+
+    if (FishMovieSdk.videoPluginInfo.supports.length <= 0) {
+        result.msg = '请填写是否支持UI';
         return result;
     }
 
-    if (urlDisUse(FishMovieSdk.videoPluginInfo.hostUrl)) {
-        FishMovieSdk.videoPluginInfo.hostUrl = FishMovieSdk.videoPluginInfo.mainPageUrl;
-    }
-
-    if (urlDisUse(FishMovieSdk.videoPluginInfo.moviePageUrl)) {
-        result.msg = '电影页地址为空或格式不正确';
-        return result;
-    }
-    if (urlDisUse(FishMovieSdk.videoPluginInfo.soapPageUrl)) {
-        result.msg = '电视剧页地址为空或格式不正确';
-        return result;
-    }
-    if (urlDisUse(FishMovieSdk.videoPluginInfo.varietyPageUrl)) {
-        result.msg = '综艺页地址为空或格式不正确';
-        return result;
-    }
-    if (urlDisUse(FishMovieSdk.videoPluginInfo.animPageUrl)) {
-        result.msg = '动漫页地址为空或格式不正确';
-        return result;
-    }
-    if (urlDisUse(FishMovieSdk.videoPluginInfo.searchPageUrl)) {
+    if (valueDisUse(FishMovieSdk.videoPluginInfo.searchPageUrl)) {
         result.msg = '搜索页地址为空或格式不正确';
         return result;
     }
@@ -115,8 +107,13 @@ checkPluginInfo = function (isSupportUI, tags) {
         return result;
     }
 
-    if (FishMovieSdk.videoPluginInfo.supports.length <= 0) {
-        result.msg = '请填写是否支持UI';
+    if (valueDisUse(FishMovieSdk.videoPluginInfo.searchPageScript.trim)) {
+        result.msg = '搜索页脚本为空';
+        return result;
+    }
+
+    if (valueDisUse(FishMovieSdk.videoPluginInfo.infoPageScript.trim)) {
+        result.msg = '播放页脚本为空';
         return result;
     }
 
@@ -125,13 +122,46 @@ checkPluginInfo = function (isSupportUI, tags) {
         return result;
     }
 
+    if (FishMovieSdk.videoPluginInfo.supports[0]) {
+
+        if (urlDisUse(FishMovieSdk.videoPluginInfo.moviePageUrl)) {
+            result.msg = '电影页地址为空或格式不正确';
+            return result;
+        }
+
+        if (urlDisUse(FishMovieSdk.videoPluginInfo.soapPageUrl)) {
+            result.msg = '电视剧页地址为空或格式不正确';
+            return result;
+        }
+
+        if (urlDisUse(FishMovieSdk.videoPluginInfo.varietyPageUrl)) {
+            result.msg = '综艺页地址为空或格式不正确';
+            return result;
+        }
+
+        if (urlDisUse(FishMovieSdk.videoPluginInfo.animPageUrl)) {
+            result.msg = '动漫页地址为空或格式不正确';
+            return result;
+        }
+
+        if (valueDisUse(FishMovieSdk.videoPluginInfo.mainPageScript.trim)) {
+            result.msg = '主页脚本为空';
+            return result;
+        }
+
+        if (valueDisUse(FishMovieSdk.videoPluginInfo.videosPageScript.trim)) {
+            result.msg = '分类页脚本为空';
+            return result;
+        }
+    }
+
     if (valueDisUse(FishMovieSdk.videoPluginInfo.updateTime)) {
         FishMovieSdk.videoPluginInfo.updateTime = new Date().Format("yyyy-MM-dd");
     }
 
     result.enable = true;
     return result;
-}
+};
 createNewPluginProject = function (onCreateListener, onFinish, onError) {
     const path = require('path');
     const {ipcRenderer} = require('electron');
@@ -152,10 +182,19 @@ createNewPluginProject = function (onCreateListener, onFinish, onError) {
 
         onCreateListener('正在创建 ' + 'manifest.json ....');
 
-        const createManifestResult = ipcRenderer.sendSync('BuildUtilsMain:createManifestSync', {
-            path: pluginProjectInfo.manifestPath,
-            data: JSON.stringify(FishMovieSdk.videoPluginInfo)
-        });
+        let createManifestResult;
+
+        if (FishMovieSdk.videoPluginInfo.supports[0]) {
+            createManifestResult = ipcRenderer.sendSync('BuildUtilsMain:createManifestSync', {
+                path: pluginProjectInfo.manifestPath,
+                data: JSON.stringify(FishMovieSdk.videoPluginInfo)
+            });
+        } else {
+            createManifestResult = ipcRenderer.sendSync('BuildUtilsMain:createManifestSync', {
+                path: pluginProjectInfo.manifestPath,
+                data: JSON.stringify(FishMovieSdk.getVideoPluginInfoNoUI())
+            });
+        }
 
         if (createManifestResult.resultCode === 1) {
             onCreateListener('创建 ' + 'manifest.json 成功....');
@@ -170,14 +209,17 @@ createNewPluginProject = function (onCreateListener, onFinish, onError) {
 
         onCreateListener('正在检查 ' + '脚本文件 ....');
 
-        createJsFileSync(FishMovieSdk.videoPluginInfo.mainPageScript);
-        createJsFileSync(FishMovieSdk.videoPluginInfo.videosPageScript);
-        createJsFileSync(FishMovieSdk.videoPluginInfo.searchPageScript);
-        createJsFileSync(FishMovieSdk.videoPluginInfo.infoPageScript);
-        createJsFileSync(FishMovieSdk.videoPluginInfo.playUrlParserScript);
+        if (FishMovieSdk.videoPluginInfo.supports[0]) {
+            createJsFileSync('mainPage.js',FishMovieSdk.videoPluginInfo.mainPageScript);
+            createJsFileSync('videosPage.js',FishMovieSdk.videoPluginInfo.videosPageScript);
+        }
+
+        createJsFileSync('searchPage.js',FishMovieSdk.videoPluginInfo.searchPageScript);
+        createJsFileSync('playPage.js',FishMovieSdk.videoPluginInfo.infoPageScript);
+        createJsFileSync('playUrlParser.js',FishMovieSdk.videoPluginInfo.playUrlParserScript);
         onFinish();
 
-        function createJsFileSync(str) {
+        function createJsFileSync(fromScriptName,str) {
             let jsPath = '';
             if (str.startsWith('./')) {
                 jsPath = path.join(pluginProjectInfo.srcPath, str.split('./')[1])
@@ -188,9 +230,13 @@ createNewPluginProject = function (onCreateListener, onFinish, onError) {
             if (jsPath === '') return;
 
             onCreateListener('正在创建 ' + '脚本文件 ' + str + ' ....');
-            const result = ipcRenderer.sendSync('BuildUtilsMain:createJsFileSync', {
-                path: jsPath,
-                data: ''
+            // const result = ipcRenderer.sendSync('BuildUtilsMain:createJsFileSync', {
+            //     path: jsPath,
+            //     data: ''
+            // });
+            const result = ipcRenderer.sendSync('BuildUtilsMain:copyProjectFileSync', {
+                fromPath: path.join(setting.buildRootPath,'demo','src','scripts', fromScriptName),
+                toPath: jsPath
             });
             if (result.resultCode === 1) {
                 onCreateListener('创建脚本文件 ' + str + '成功....');

@@ -54,8 +54,13 @@ class PluginCompile {
             }
 
             this.pluginOutFilePath = path.join(this.pluginOutRootPath, `${readPluginManifest.name}${this.pluginOutFileSubFix}`)
-            readPluginManifest.mainPageScript = this.resovelScriptStr("mainPageScript", readPluginManifest.mainPageScript)
-            readPluginManifest.videosPageScript = this.resovelScriptStr("videosPageScript", readPluginManifest.videosPageScript)
+            try {
+                readPluginManifest.mainPageScript = this.resovelScriptStr("mainPageScript", readPluginManifest.mainPageScript)
+                readPluginManifest.videosPageScript = this.resovelScriptStr("videosPageScript", readPluginManifest.videosPageScript)
+            } catch (e) {
+             
+            }
+
             readPluginManifest.searchPageScript = this.resovelScriptStr("searchPageScript", readPluginManifest.searchPageScript)
             readPluginManifest.infoPageScript = this.resovelScriptStr("infoPageScript", readPluginManifest.infoPageScript)
             readPluginManifest.playUrlParserScript = this.resovelScriptStr("playUrlParserScript", readPluginManifest.playUrlParserScript)

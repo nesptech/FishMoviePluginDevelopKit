@@ -63,6 +63,13 @@
                     <el-input-number :min="0" v-model="form.videoPluginInfo.verCode"></el-input-number>
                 </el-form-item>
 
+                <el-form-item label="是否支持UI">
+                    <el-select v-on:change="onSupportUIChanged" v-model="form.isSupportUI">
+                        <el-option label="是" value="true"></el-option>
+                        <el-option label="否" value="false"></el-option>
+                    </el-select>
+                </el-form-item>
+
                 <el-form-item label="[选填]简介">
                     <el-input clearable placeholder="请输入插件简介" v-model="form.videoPluginInfo.introShort"></el-input>
                 </el-form-item>
@@ -72,41 +79,36 @@
                               placeholder="请输入插件介绍"
                               v-model="form.videoPluginInfo.intro"></el-input>
                 </el-form-item>
+
                 <el-form-item label="[选填]标签">
                     <el-input :autosize="{ minRows: 1, maxRows:2 }" clearable placeholder="请输入插件标签，多个标签以空格隔开"
                               type="textarea"
                               v-model="form.tags"></el-input>
                 </el-form-item>
 
-                <el-form-item label="是否支持UI">
-                    <el-select v-model="form.isSupportUI" placeholder="请选择引擎版本号">
-                        <el-option label="是" value="true"></el-option>
-                        <el-option label="否" value="false"></el-option>
-                    </el-select>
+                <el-form-item label="根地址">
+                    <el-input clearable placeholder="请输入根地址" v-model="form.videoPluginInfo.hostUrl"></el-input>
                 </el-form-item>
 
-                <el-form-item label="[选填]根地址">
-                    <el-input clearable placeholder="请输入根地址，默认使用主页地址" v-model="form.videoPluginInfo.hostUrl"></el-input>
+                <el-form-item v-if="supportUI" label="[选填]主页地址">
+                    <el-input clearable placeholder="请输入主页地址，默认使用根地址"
+                              v-model="form.videoPluginInfo.mainPageUrl"></el-input>
                 </el-form-item>
 
-                <el-form-item label="主页地址">
-                    <el-input clearable placeholder="请输入主页地址" v-model="form.videoPluginInfo.mainPageUrl"></el-input>
-                </el-form-item>
-
-                <el-form-item label="电影页地址">
+                <el-form-item v-if="supportUI" label="电影页地址">
                     <el-input clearable placeholder="请输入电影页地址" v-model="form.videoPluginInfo.moviePageUrl"></el-input>
                 </el-form-item>
 
-                <el-form-item label="电视剧页地址">
+                <el-form-item v-if="supportUI" label="电视剧页地址">
                     <el-input clearable placeholder="请输入电视剧页地址" v-model="form.videoPluginInfo.soapPageUrl"></el-input>
                 </el-form-item>
 
-                <el-form-item label="综艺页地址">
+                <el-form-item v-if="supportUI" label="综艺页地址">
                     <el-input clearable placeholder="请输入综艺页地址"
                               v-model="form.videoPluginInfo.varietyPageUrl"></el-input>
                 </el-form-item>
 
-                <el-form-item label="动漫页地址">
+                <el-form-item v-if="supportUI" label="动漫页地址">
                     <el-input clearable placeholder="请输入动漫页地址" v-model="form.videoPluginInfo.animPageUrl"></el-input>
                 </el-form-item>
 
@@ -115,7 +117,7 @@
                               v-model="form.videoPluginInfo.searchPageUrl"></el-input>
                 </el-form-item>
 
-                <el-form-item label="主页脚本">
+                <el-form-item v-if="supportUI" label="主页脚本">
 
                     <el-row>
                         <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
@@ -125,7 +127,7 @@
                     </el-row>
                 </el-form-item>
 
-                <el-form-item label="分类页脚本">
+                <el-form-item v-if="supportUI" label="分类页脚本">
                     <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
                               placeholder="请输入脚本文件路径或脚本字符串"
                               v-model="form.videoPluginInfo.videosPageScript"></el-input>
@@ -146,7 +148,7 @@
                     <el-button @click="showPickPlayScript">选择脚本文件</el-button>
                 </el-form-item>
 
-                <el-form-item label="播放链解析脚本">
+                <el-form-item label="[选填]播放链解析脚本">
                     <el-input type="textarea" :autosize="{ minRows: 1, maxRows: 5 }" clearable
                               placeholder="请输入脚本文件路径或脚本字符串"
                               v-model="form.videoPluginInfo.playUrlParserScript"
@@ -160,7 +162,7 @@
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="更新日期">
+                <el-form-item label="[选填]更新日期">
                     <el-col :span="11">
                         <el-date-picker
                                 type="date"
@@ -366,6 +368,11 @@
             );
         },
         methods: {
+            onSupportUIChanged(value) {
+                this.supportUI = value === '是' || value === true||value==='true';
+                console.log(this.supportUI)
+            },
+
             openRepo() {
                 require('electron').shell.openExternal('https://github.com/NESPTechnology/FishMoviePluginDevelopTools')
             }
@@ -639,6 +646,7 @@
                 form: {
                     videoPluginInfo: FishMovieSdk.videoPluginInfo,
                     isSupportUI: '否',
+                    supportUI: false,
                     tags: "",
                 },
 
